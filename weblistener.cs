@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Sage50 - Customers API Server
+ * This application runs as a webserver and provides the data from Sage50 database in JSON format.
+ * @author Ivan komlev <ivankomlev@gmail.com>
+ * @github https://github.com/Ivan-Komlev/Sage50Connector
+ * @copyright Copyright(C) 2020.All Rights Reserved
+ * @license GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html
+*/
+
+using System;
 using System.Text;
 using System.Threading;
 
@@ -9,30 +18,24 @@ namespace WebListener
 {
     public class WebListener
     {
+        public configuration config;
         public Sage50.Sage50 sage;
 
         private Thread _serverThread;
         private HttpListener _listener;
-        private int _port;
-
-    public int Port
-    {
-        get { return _port; }
-        private set { }
-    }
-
-    public void Stop()
-    {
-        _serverThread.Abort();
-        _listener.Stop();
-    }
+      
+        public void Stop()
+        {
+            _serverThread.Abort();
+            _listener.Stop();
+        }
 
     private void Listen()
     {
         _listener = new HttpListener();
-        _listener.Prefixes.Add("http://localhost:8080/");
-        //_listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
-        //_listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
+        
+        _listener.Prefixes.Add(config.host + ":" + config.port.ToString() + "/");
+
         _listener.Start();
         while (true)
         {
@@ -117,23 +120,23 @@ namespace WebListener
         context.Response.OutputStream.Flush();
     }
 
-    private void Initialize(int port)
+    private void Initialize()
     {
-        this._port = port;
         _serverThread = new Thread(this.Listen);
         _serverThread.Start();
     }
 
-    public void startWebServer(Sage50.Sage50 sage_)
+    public void startWebServer(Sage50.Sage50 sage_, configuration config_)
     {
             sage = sage_;
+            config = config_;
 
             //get an empty port
             TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-        l.Start();
-        int port = ((IPEndPoint)l.LocalEndpoint).Port;
-        l.Stop();
-        this.Initialize(80);
-    }
+            l.Start();
+            int port = ((IPEndPoint)l.LocalEndpoint).Port;
+            l.Stop();
+            this.Initialize();
+        }
 }
 }

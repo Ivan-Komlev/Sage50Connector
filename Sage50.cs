@@ -1,4 +1,13 @@
-﻿using Sage.Peachtree.API;
+﻿/*
+ * Sage50 - Customers API Server
+ * This application runs as a webserver and provides the data from Sage50 database in JSON format.
+ * @author Ivan komlev <ivankomlev@gmail.com>
+ * @github https://github.com/Ivan-Komlev/Sage50Connector
+ * @copyright Copyright(C) 2020.All Rights Reserved
+ * @license GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html
+*/
+
+using Sage.Peachtree.API;
 using Sage.Peachtree.API.Collections.Generic;
 using System;
 using System.Linq;
@@ -11,6 +20,7 @@ namespace Sage50
     {
         public AuthorizationResult connectionStatus;
         private PeachtreeSession session;
+        private configuration config;
 
         public string getCompany(string serverName, string databaseName)
         {
@@ -54,7 +64,7 @@ namespace Sage50
             if (connectionStatus == AuthorizationResult.Granted)
             {
                     Company company = session.Open(companyIdentifier);
-                    Console.WriteLine("Company test {0}", company.CompanyIdentifier.CompanyName);
+                    Console.WriteLine("Company {0}", company.CompanyIdentifier.CompanyName);
                     var customers = company.Factories.CustomerFactory.List();
                     FilterExpression filter = FilterExpression.Equal(
                     FilterExpression.Property("Customer.IsInactive"),
@@ -63,14 +73,38 @@ namespace Sage50
                     modifiers.Filters = filter;
                     customers.Load(modifiers);
                     var cs = customers.ToList();
-                    foreach (Customer customer in cs)
-                    {
-                        Console.WriteLine("Name {0} ID {1}", customer.Name, customer.ID);
 
-                        var json = new JavaScriptSerializer().Serialize(customer);
-                        return json.ToString();
-                    }
+                    List<CustomerDetails> customerDetailsList = new List<CustomerDetails>();
+
+                foreach (Customer customer in cs)
+                {
+                    CustomerDetails customerDetails = new CustomerDetails(customer.ID)
+                    {
+                        AccountNumber = customer.AccountNumber,
+                        Balance = customer.Balance,
+                        Email = customer.Email,
+                        LastInvoiceAmount = customer.LastInvoiceAmount,
+                        LastInvoiceDate = (System.DateTime)customer.LastInvoiceDate,
+                        Name = customer.Name,
+                        PhoneNumbers = customer.PhoneNumbers,
+                        LastPaymentAmount = customer.LastPaymentAmount,
+                        LastPaymentDate = (System.DateTime)customer.LastPaymentDate,
+                        PaymentMethod = customer.PaymentMethod,
+                        CustomerSince = (System.DateTime)customer.CustomerSince,
+                        AverageDaysToPayInvoices = (decimal)customer.AverageDaysToPayInvoices,
+                        Category = customer.Category,
+                        LastStatementDate = (System.DateTime)customer.LastStatementDate
+                    };
+
+                    customerDetailsList.Add(customerDetails);
+
+                    Console.WriteLine("Name {0} ID {1}", customer.Name, customer.ID);
+
                 }
+
+                var json = new JavaScriptSerializer().Serialize(customerDetailsList);
+                return json.ToString();
+            }
 
             return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
         }
@@ -81,7 +115,7 @@ namespace Sage50
 
             Console.WriteLine("Starting session");
             session = new PeachtreeSession();
-            session.Begin("gTSHuV5yGO7JWy8T/KGEmZBg+iPuDMYSqyznuxS4kSoRysz//Bqctg==Apd+xI0DANnYL47i+jTPPo6dbS/Ifveze27P+jgTJJginl7DTolyii6iw1KE+i4ttMsKJRBgX0fRpvEHEefMl4KRaUCRwEXh4Bz4hOzNZzT7DgA7Uo7DrAjGW6Pk0mYgqHAjlH9U+rK0V4OclHn0Lx96SAPxxp/7ktL/5tM4V+S4MXTeHsbtAwlXthZ8fDJh9AojWGV64HaGjriOStfoc05pW7Luj6k4yIZeKEFfcZqyp4Pz3RCZlAfzhIFzbi6U");
+            session.Begin(config.applicationIdentifier);
 
             Console.WriteLine("Session started");
         }

@@ -19,6 +19,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="configuration.cs" />
+    <Compile Include="CustomerDetails.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Sage50.cs" />
     <Compile Include="weblistener.cs" />
