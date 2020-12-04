@@ -1,5 +1,5 @@
 # Sage50Connector
-Sage50 - Customers API Server
+Sage50 - Customers API Server.
 This application runs as a webserver and provides the data from Sage50 database in JSON format.
 
 Usage example:
