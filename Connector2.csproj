@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <ProjectGuid>{AF025E52-454D-4977-BAC5-1E19510F619F}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Sage50.cs" />
+    <Compile Include="weblistener.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="policy.2020.0.Sage.Peachtree.API, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.0.Sage.Peachtree.API.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2020.0.Sage.Peachtree.API.Resolver, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.0.Sage.Peachtree.API.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2020.1.Sage.Peachtree.API, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.1.Sage.Peachtree.API.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2020.1.Sage.Peachtree.API.Resolver, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.1.Sage.Peachtree.API.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2020.2.Sage.Peachtree.API, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.2.Sage.Peachtree.API.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2020.2.Sage.Peachtree.API.Resolver, Version=2020.2.0.0, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\policy.2020.2.Sage.Peachtree.API.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Peachtree.API, Version=2020.2.0.219, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\Sage.Peachtree.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Peachtree.API.Resolver, Version=2020.2.0.219, Culture=neutral, PublicKeyToken=d06c16dde04d83e4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Sage\Peachtree\API\Sage.Peachtree.API.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
