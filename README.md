@@ -22,7 +22,9 @@ Get list single company:
 
 params:
 query=company
+
 server=SVRDEV
+
 database=oxfordsms
 
 http://localhost:8080/?query=company&server=SVRDEV&database=oxfordsms
