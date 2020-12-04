@@ -21,10 +21,8 @@ Response in JSON
 Get list single company:
 
 params:
-query=company
-
-server=SVRDEV
-
+query=company,
+server=SVRDEV,
 database=oxfordsms
 
 http://localhost:8080/?query=company&server=SVRDEV&database=oxfordsms
@@ -38,7 +36,7 @@ Response in JSON
 Find companies:
 
 params:
-query=findcompany
+query=findcompany,
 name=Oxford
 
 http://localhost:8080/?query=company&server=SVRRDP&database=newpreescolaroxford2
@@ -54,8 +52,8 @@ Response in JSON
 Get number of customers:
 
 params:
-query=countcustomers
-server=SVRDEV
+query=countcustomers,
+server=SVRDEV,
 database=oxfordsms
 
 http://localhost:8080/?query=countcustomers&server=SVRRDP&database=newpreescolaroxford2
@@ -69,9 +67,9 @@ Response in JSON
 Get list of customers:
 
 params:
-query=customers
-server=SVRDEV
-database=oxfordsms
+query=customers,
+server=SVRDEV,
+database=oxfordsms,
 page=from 0 to number_of_customers / 100 (100 records per page)
 
 http://localhost:8080/?query=customers&server=SVRDEV&database=oxfordsms
