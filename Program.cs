@@ -18,9 +18,9 @@ namespace Connector2
             {
                 configuration config = new configuration("config.ini");
 
-                Sage50.Sage50 sage = new Sage50.Sage50();
-                WebListener.WebListener listener = new WebListener.WebListener();
-                listener.startWebServer(sage, config);
+                Sage50.Sage50 sage = new Sage50.Sage50(config);
+                WebListener.WebListener listener = new WebListener.WebListener(config);
+                listener.startWebServer(sage);
 
                 sage.Connect2Sage50();
             }

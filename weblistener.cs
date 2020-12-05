@@ -11,6 +11,9 @@ using System;
 using System.Text;
 using System.Threading;
 
+using System.IO;
+using System.Security.Cryptography;
+
 using System.Net.Sockets;
 using System.Net;
 
@@ -23,7 +26,11 @@ namespace WebListener
 
         private Thread _serverThread;
         private HttpListener _listener;
-      
+
+        public WebListener(configuration config_)
+        {
+            config = config_;
+        }
         public void Stop()
         {
             _serverThread.Abort();
@@ -44,17 +51,35 @@ namespace WebListener
                 HttpListenerContext context = _listener.GetContext();
 
                 Console.WriteLine(context.Request.Url.ToString());
+                
 
-                string query = context.Request.QueryString["query"];
-                string serverName = context.Request.QueryString["server"];
-                string databaseName = context.Request.QueryString["database"];
-                string companyName = context.Request.QueryString["name"];
+                string apikey = context.Request.QueryString["apikey"];
 
-                switch (query)
+                if (apikey == null)
+                {
+                        Respond(context, "{\"error\":\"API Key not provides\"}");
+                        continue;
+                }
+
+                    if (apikey != config.APIKey)
+                    {
+                        //Implement some black list in the future.
+                        Respond(context, "{\"error\":\"Wrong API Key\"}");
+                        continue;
+                    }
+
+                    string query = context.Request.QueryString["query"];
+                    string serverName = context.Request.QueryString["server"];
+                    string databaseName = context.Request.QueryString["database"];
+                    string companyName = context.Request.QueryString["name"];
+
+                    bool encrypt = context.Request.QueryString["encrypt"] == "1"; //1 encrypt anything else - don't encrypt
+
+                    switch (query)
                 {
                         case "status":
 
-                            Respond(context, sage.connectionStatus.ToString());
+                            Respond(context, sage.connectionStatus.ToString(), encrypt);
 
                             break;
 
@@ -65,7 +90,7 @@ namespace WebListener
                             else if(databaseName == null)
                                 Respond(context, "{\"error\":\"Database name not set\"}");
                             else
-                                Respond(context, sage.getCompany(serverName, databaseName));
+                                Respond(context, sage.getCompany(serverName, databaseName), encrypt);
 
                             break;
 
@@ -74,19 +99,38 @@ namespace WebListener
                             if (companyName == null)
                                 Respond(context, "{\"error\":\"Company name not set\"}");
                             else
-                                Respond(context, sage.findCompany(companyName));
+                                Respond(context, sage.findCompany(companyName), encrypt);
 
                             break;
 
                         case "companies":
 
-                            Respond(context, sage.getCompanies());
+                            Respond(context, sage.getCompanies(), encrypt);
 
                             break;
 
                         case "customers":
 
-                            Respond(context, sage.getCustomers(serverName, databaseName));
+                            int page = 0;
+                            string page_str = context.Request.QueryString["page"];
+                            if (page_str != null)
+                            {
+                                try
+                                {
+                                    page = int.Parse(page_str);
+                                }
+                                catch (Exception)
+                                {
+                                    Respond(context, "{\"error\":\"Page number is not a number\"}");
+                                }
+                            }
+
+                            Respond(context, sage.getCustomers(serverName, databaseName, page), encrypt);
+                            
+                            break;
+
+                        case "countcustomers":
+                            Respond(context, sage.countCustomers(serverName, databaseName), encrypt);
 
                             break;
 
@@ -104,9 +148,45 @@ namespace WebListener
         }
     }
 
-    private void Respond(HttpListenerContext context, string response)
-    {
-        byte[] buffer = Encoding.ASCII.GetBytes(response);
+        private static string EncryptString(string key, string plainText)
+        {
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                        {
+                            streamWriter.Write(plainText);
+                        }
+
+                        array = memoryStream.ToArray();
+                    }
+                }
+            }
+
+            return Convert.ToBase64String(array);
+        }
+        private void Respond(HttpListenerContext context, string response, bool encrypt = false)
+        {
+            byte[] buffer;
+
+            if (encrypt && config.Password!="")
+            {
+                string encryptedString = EncryptString(config.Password, response);
+                buffer = Encoding.ASCII.GetBytes(encryptedString);
+            }
+            else
+                buffer = Encoding.ASCII.GetBytes(response);
 
 
         context.Response.ContentType = "application/json";
@@ -126,11 +206,10 @@ namespace WebListener
         _serverThread.Start();
     }
 
-    public void startWebServer(Sage50.Sage50 sage_, configuration config_)
+    public void startWebServer(Sage50.Sage50 sage_)
     {
             sage = sage_;
-            config = config_;
-
+            
             //get an empty port
             TcpListener l = new TcpListener(IPAddress.Loopback, 0);
             l.Start();

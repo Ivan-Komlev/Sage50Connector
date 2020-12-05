@@ -22,6 +22,11 @@ namespace Sage50
         private PeachtreeSession session;
         private configuration config;
 
+        public Sage50(configuration config_)
+        {
+            config = config_;
+        }
+
         public string getCompany(string serverName, string databaseName)
         {
             CompanyIdentifier companyIdentifier = session.LookupCompanyIdentifier(serverName, databaseName);
@@ -54,7 +59,35 @@ namespace Sage50
             return json.ToString();
         }
 
-        public string getCustomers(string serverName, string databaseName)
+        public string countCustomers(string serverName, string databaseName)
+        {
+            CompanyIdentifier companyIdentifier = session.LookupCompanyIdentifier(serverName, databaseName);
+
+            connectionStatus = session.RequestAccess(companyIdentifier);
+            Console.WriteLine("Result {0}", connectionStatus.ToString());
+
+            if (connectionStatus == AuthorizationResult.Granted)
+            {
+                Company company = session.Open(companyIdentifier);
+                Console.WriteLine("Company {0}", company.CompanyIdentifier.CompanyName);
+                var customers = company.Factories.CustomerFactory.List();
+                FilterExpression filter = FilterExpression.Equal(
+                FilterExpression.Property("Customer.IsInactive"),
+                FilterExpression.Constant(false));
+                LoadModifiers modifiers = LoadModifiers.Create();
+                modifiers.Filters = filter;
+                customers.Load(modifiers);
+
+                int count = customers.Count;
+                session.Close(company);
+
+                return "{\"count\":\"" + count + "\"}";
+            }
+
+            return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
+        }
+
+        public string getCustomers(string serverName, string databaseName, int page)
         {
             CompanyIdentifier companyIdentifier = session.LookupCompanyIdentifier(serverName, databaseName);
             
@@ -76,35 +109,60 @@ namespace Sage50
 
                     List<CustomerDetails> customerDetailsList = new List<CustomerDetails>();
 
-                foreach (Customer customer in cs)
+                int start_index = page * config.recordsPerPage;
+
+                for (int index = start_index; index < start_index + config.recordsPerPage; index++)
                 {
+                    if (index >= cs.Count)
+                        break;
+
+                    Customer customer = cs[index];
+
                     CustomerDetails customerDetails = new CustomerDetails(customer.ID)
                     {
                         AccountNumber = customer.AccountNumber,
                         Balance = customer.Balance,
                         Email = customer.Email,
                         LastInvoiceAmount = customer.LastInvoiceAmount,
-                        LastInvoiceDate = (System.DateTime)customer.LastInvoiceDate,
+                        
                         Name = customer.Name,
-                        PhoneNumbers = customer.PhoneNumbers,
+
                         LastPaymentAmount = customer.LastPaymentAmount,
-                        LastPaymentDate = (System.DateTime)customer.LastPaymentDate,
+                        
                         PaymentMethod = customer.PaymentMethod,
-                        CustomerSince = (System.DateTime)customer.CustomerSince,
-                        AverageDaysToPayInvoices = (decimal)customer.AverageDaysToPayInvoices,
-                        Category = customer.Category,
-                        LastStatementDate = (System.DateTime)customer.LastStatementDate
+                        
+                        
+                        Category = customer.Category
+                        
                     };
 
+                    if (customer.AverageDaysToPayInvoices != null)
+                        customerDetails.AverageDaysToPayInvoices = (decimal)customer.AverageDaysToPayInvoices;
+
+                    customerDetails.PhoneNumbers = customer.PhoneNumbers;
+
+                    if (customer.CustomerSince != null)
+                        customerDetails.CustomerSince = customer.CustomerSince.ToString();
+
+                    if (customer.LastPaymentDate!=null)
+                        customerDetails.LastPaymentDate = customer.LastPaymentDate.ToString();
+
+                    if (customer.LastStatementDate != null)
+                        customerDetails.LastStatementDate = customer.LastStatementDate.ToString();
+
+                    if (customer.LastInvoiceDate != null)
+                        customerDetails.LastInvoiceDate = customer.LastInvoiceDate.ToString();
+
                     customerDetailsList.Add(customerDetails);
-
-                    Console.WriteLine("Name {0} ID {1}", customer.Name, customer.ID);
-
                 }
+
+                session.Close(company);
 
                 var json = new JavaScriptSerializer().Serialize(customerDetailsList);
                 return json.ToString();
             }
+
+            
 
             return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
         }
@@ -115,6 +173,7 @@ namespace Sage50
 
             Console.WriteLine("Starting session");
             session = new PeachtreeSession();
+
             session.Begin(config.applicationIdentifier);
 
             Console.WriteLine("Session started");

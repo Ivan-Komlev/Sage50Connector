@@ -15,7 +15,8 @@ public struct configuration
     public string host;
     public string applicationIdentifier;
     public string APIKey;
-    public string EncriptionPassword;
+    public string Password;
+    public int recordsPerPage;
 
     public configuration(string filename)
     {
@@ -23,7 +24,8 @@ public struct configuration
         host = "";
         applicationIdentifier = "";
         APIKey = "";
-        EncriptionPassword = "";
+        Password = "";
+        recordsPerPage=100;
 
         if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "/" + filename))
         {
@@ -64,8 +66,8 @@ public struct configuration
                             APIKey = value.Trim();
                             break;
 
-                        case "encriptionpassword":
-                            EncriptionPassword = value.Trim();
+                        case "password":
+                            Password = value.Trim();
                             break;
 
                     }

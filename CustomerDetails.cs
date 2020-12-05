@@ -25,18 +25,18 @@ public struct CustomerDetails
         public string Email;
 
         public decimal LastInvoiceAmount;
-        public DateTime LastInvoiceDate;
+        public string LastInvoiceDate;
         public string Name;
         public Sage.Peachtree.API.PhoneNumberCollection PhoneNumbers;
         public decimal LastPaymentAmount;
-        public DateTime LastPaymentDate;
+        public string LastPaymentDate;
         public string PaymentMethod;
-        public DateTime CustomerSince;
+        public string CustomerSince;
         //var CustomFieldValues;
         public decimal AverageDaysToPayInvoices;
         //BillToContact;
         public string Category;
-        public DateTime LastStatementDate;
+        public string LastStatementDate;
 
         public CustomerDetails(string ID_)
         {
@@ -48,18 +48,18 @@ public struct CustomerDetails
             Email = "";
         
             LastInvoiceAmount = 0;
-            LastInvoiceDate = System.DateTime.MinValue;
+            LastInvoiceDate = "";
             Name = "";
             PhoneNumbers = null;
             LastPaymentAmount = 0;
-            LastPaymentDate = System.DateTime.MinValue;
+            LastPaymentDate = "";
             PaymentMethod = "";
-            CustomerSince = System.DateTime.MinValue;
+            CustomerSince = "";;
         
             AverageDaysToPayInvoices = 0;
         
             Category = "";
-            LastStatementDate = System.DateTime.MinValue;
+            LastStatementDate = "";
         }
 
     }
