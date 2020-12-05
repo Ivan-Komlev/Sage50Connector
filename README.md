@@ -2,15 +2,28 @@
 Sage50 - Customers API Server.
 This application runs as a webserver and provides the data from Sage50 database in JSON format.
 
+--------------
+config.ini file:
+
+port=8080
+applicationIdentifier=Sage50 partner application identifier
+APIKey=MYAPIKEY123 -- a key to be used with every query
+Password=b14ca589814e4133bbce2ea2315a1916  -- 32byte ecryptonion key
+host=http://localhost -- host to listen
+
 Usage example:
 ------------------------------------------------
 
 Get list of companies from Sage50 server:
 
 params:
+apikey=MYAPIKEY123
 query=companies
 
-http://localhost:8080/?query=companies
+optional param:
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+
+http://localhost:8080/?query=companies&apikey=MYAPIKEY123&encrypt=1 
 
 Response in JSON
 
@@ -21,11 +34,15 @@ Response in JSON
 Get list single company:
 
 params:
+apikey=MYAPIKEY123
 query=company,
 server=SVRDEV,
 database=oxfordsms
 
-http://localhost:8080/?query=company&server=SVRDEV&database=oxfordsms
+optional param:
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+
+http://localhost:8080/?query=company&server=SVRDEV&database=oxfordsms&apikey=MYAPIKEY123&encrypt=0
 
 Response in JSON
 
@@ -36,10 +53,14 @@ Response in JSON
 Find companies:
 
 params:
+apikey=MYAPIKEY123
 query=findcompany,
 name=Oxford
 
-http://localhost:8080/?query=company&server=SVRRDP&database=newpreescolaroxford2
+optional param:
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+
+http://localhost:8080/?query=company&server=SVRRDP&database=newpreescolaroxford2&apikey=MYAPIKEY123
 
 Response in JSON
 
@@ -52,11 +73,15 @@ Response in JSON
 Get number of customers:
 
 params:
+apikey=MYAPIKEY123
 query=countcustomers,
 server=SVRDEV,
 database=oxfordsms
 
-http://localhost:8080/?query=countcustomers&server=SVRRDP&database=newpreescolaroxford2
+optional param:
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+
+http://localhost:8080/?query=countcustomers&server=SVRRDP&database=newpreescolaroxford2&apikey=MYAPIKEY123
 
 Response in JSON
 
@@ -67,12 +92,16 @@ Response in JSON
 Get list of customers:
 
 params:
+apikey=MYAPIKEY123
 query=customers,
 server=SVRDEV,
 database=oxfordsms,
 page=from 0 to number_of_customers / 100 (100 records per page)
 
-http://localhost:8080/?query=customers&server=SVRDEV&database=oxfordsms
+optional param:
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+
+http://localhost:8080/?query=customers&server=SVRDEV&database=oxfordsms&apikey=MYAPIKEY123&encrypt=1
 
 Response in JSON
 
