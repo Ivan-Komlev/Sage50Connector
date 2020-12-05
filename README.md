@@ -21,8 +21,8 @@ Response in JSON
 Get list single company:
 
 params:
-query=company
-server=SVRDEV
+query=company,
+server=SVRDEV,
 database=oxfordsms
 
 http://localhost:8080/?query=company&server=SVRDEV&database=oxfordsms
@@ -36,7 +36,7 @@ Response in JSON
 Find companies:
 
 params:
-query=findcompany
+query=findcompany,
 name=Oxford
 
 http://localhost:8080/?query=company&server=SVRRDP&database=newpreescolaroxford2
@@ -49,18 +49,34 @@ Response in JSON
 
 ------------------------------------------------
 
+Get number of customers:
+
+params:
+query=countcustomers,
+server=SVRDEV,
+database=oxfordsms
+
+http://localhost:8080/?query=countcustomers&server=SVRRDP&database=newpreescolaroxford2
+
+Response in JSON
+
+{"count":"2"}
+
+------------------------------------------------
+
 Get list of customers:
 
 params:
-query=customers
-server=SVRDEV
-database=oxfordsms
+query=customers,
+server=SVRDEV,
+database=oxfordsms,
+page=from 0 to number_of_customers / 100 (100 records per page)
 
 http://localhost:8080/?query=customers&server=SVRDEV&database=oxfordsms
 
 Response in JSON
 
-[] - Not implemented yet
+[{"Number":"","Key":3}],"LastPaymentAmount":2000.0000000000000000000,"LastPaymentDate":"\/Date(1487221200000)\/","PaymentMethod":"2CHECKOUT","CustomerSince":"\/Date(1487221200000)\/","AverageDaysToPayInvoices":0,"Category":"","LastStatementDate":"\/Date(-62135578800000)\/"},{"ID":"JOHN-SMITH-1","AccountNumber":"","Balance":0.0000000000000000000,"Email":"info@oxfordsms.com","LastInvoiceAmount":0.0000000000000000000,"LastInvoiceDate":"\/Date(-62135578800000)\/","Name":"SMITH,JOHN","PhoneNumbers":[{"Number":"6084-8737","Key":1},{"Number":"","Key":2},{"Number":"","Key":3}],"LastPaymentAmount":0.0000000000000000000,"LastPaymentDate":"\/Date(-62135578800000)\/","PaymentMethod":"2CHECKOUT","CustomerSince":"\/Date(1491800400000)\/","AverageDaysToPayInvoices":0,"Category":"","LastStatementDate":"\/Date(-62135578800000)\/"},{"ID":"REED MARIA-NU-1","AccountNumber":"","Balance":426.0000000000000000000,"Email":"support@oxfordsms.com","LastInvoiceAmount":213.0000000000000000000,"LastInvoiceDate":"\/Date(1606798800000)\/","Name":"READ MARIA","PhoneNumbers":[{"Number":"6084-8737","Key":1},{"Number":"","Key":2}]
 
 
 
