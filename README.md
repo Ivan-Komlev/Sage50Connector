@@ -5,11 +5,11 @@ This application runs as a webserver and provides the data from Sage50 database 
 --------------
 config.ini file:
 
-#port=8080
-#applicationIdentifier=Sage50 partner application identifier
-#APIKey=MYAPIKEY123 -- a key to be used with every query
-#Password=b14ca589814e4133bbce2ea2315a1916  -- 32byte ecryptonion key
-#host=http://localhost -- host to listen
+port=8080\n
+applicationIdentifier=Sage50 partner application identifier\n
+APIKey=MYAPIKEY123 -- a key to be used with every query\n
+Password=b14ca589814e4133bbce2ea2315a1916  -- 32byte ecryptonion key\n
+host=http://localhost -- host to listen
 
 Usage example:
 ------------------------------------------------
