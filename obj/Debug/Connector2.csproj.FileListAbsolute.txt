@@ -1,0 +1,11 @@
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Connector2.exe.config
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Connector2.exe
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Connector2.pdb
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Newtonsoft.Json.dll
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Sage.Peachtree.API.dll
+C:\Dropbox\github\ivankomlev\Sage50Connector\bin\Debug\Sage.Peachtree.API.Resolver.dll
+C:\Dropbox\github\ivankomlev\Sage50Connector\obj\Debug\Connector2.csprojAssemblyReference.cache
+C:\Dropbox\github\ivankomlev\Sage50Connector\obj\Debug\Connector2.csproj.CoreCompileInputs.cache
+C:\Dropbox\github\ivankomlev\Sage50Connector\obj\Debug\Connector2.csproj.CopyComplete
+C:\Dropbox\github\ivankomlev\Sage50Connector\obj\Debug\Connector2.exe
+C:\Dropbox\github\ivankomlev\Sage50Connector\obj\Debug\Connector2.pdb
