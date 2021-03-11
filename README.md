@@ -31,7 +31,7 @@ Response in JSON
 
 ------------------------------------------------
 
-Get list single company:
+Get single company details:
 
 params:
 apikey=MYAPIKEY123
@@ -86,6 +86,12 @@ http://localhost:8080/?query=countcustomers&server=SVRRDP&database=newpreescolar
 Response in JSON
 
 {"count":"2"}
+
+If the access to specified database is not granted you will get an error message like this:
+
+{"error":"Access: Pending"}
+
+
 
 ------------------------------------------------
 
