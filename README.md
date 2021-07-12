@@ -115,3 +115,18 @@ Response in JSON
 
 
 
+------------------------------------------------
+
+Get list of invoices:
+
+params:
+apikey=MYAPIKEY123
+server=SVRDEV,
+database=oxfordsms,
+query=invoices,
+encrypt=1   - 1 to encrypt the output, 0 not to encrypt
+customer=CUSTOMRER ID,
+datefrom=DATE FROM (iso8601) Example:20080501T08:30:52
+dateto==DATE TO (iso8601) Example:20220501T08:30:52
+
+http://localhost:8080/?query=invoices&server=SVRDEV&database=oxfordsms&apikey=MYAPIKEY123&encrypt=1&datefrom=20080501T08:30:52&dateto=20220501T08:30:52
