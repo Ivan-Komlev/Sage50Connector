@@ -130,3 +130,7 @@ datefrom=DATE FROM (iso8601) Example:20080501T08:30:52
 dateto==DATE TO (iso8601) Example:20220501T08:30:52
 
 http://localhost:8080/?query=invoices&server=SVRDEV&database=oxfordsms&apikey=MYAPIKEY123&encrypt=1&datefrom=20080501T08:30:52&dateto=20220501T08:30:52
+
+Response in JSON
+
+[{"Amount":60.0000000000000000000,"AmountDue":0.0000000000000000000,"Date":"5/10/2021 12:00:00 AM","DateDue":"6/9/2021 12:00:00 AM","DiscountAmount":0.0000000000000000000,"DiscountDate":"5/10/2021 12:00:00 AM"}]
