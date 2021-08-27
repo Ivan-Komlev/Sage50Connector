@@ -37,29 +37,28 @@ namespace WebListener
             _listener.Stop();
         }
 
-    private void Listen()
-    {
-        _listener = new HttpListener();
-        
-        _listener.Prefixes.Add(config.host + ":" + config.port.ToString() + "/");
-
-        _listener.Start();
-        while (true)
+        private void Listen()
         {
-            try
+            _listener = new HttpListener();
+        
+            _listener.Prefixes.Add(config.host + ":" + config.port.ToString() + "/");
+
+            _listener.Start();
+            while (true)
             {
-                HttpListenerContext context = _listener.GetContext();
-
-                Console.WriteLine(context.Request.Url.ToString());
-                
-
-                string apikey = context.Request.QueryString["apikey"];
-
-                if (apikey == null)
+                try
                 {
+                    HttpListenerContext context = _listener.GetContext();
+
+                    Console.WriteLine(context.Request.Url.ToString());
+
+                    string apikey = context.Request.QueryString["apikey"];
+
+                    if (apikey == null)
+                    {
                         Respond(context, "{\"error\":\"API Key not provides\"}");
                         continue;
-                }
+                    }
 
                     if (apikey != config.APIKey)
                     {
@@ -73,10 +72,22 @@ namespace WebListener
                     string databaseName = context.Request.QueryString["database"];
                     string companyName = context.Request.QueryString["name"];
 
+                    int page = 0;
+                    string page_str = context.Request.QueryString["page"];
+
+                    string customerId = context.Request.QueryString["customer"];
+                    string datefrom_str = context.Request.QueryString["datefrom"];
+                    string dateto_str = context.Request.QueryString["dateto"];
+
+                    //var iso8601String = "20080501T08:30:52";
+                    DateTime dateFrom;
+                    DateTime dateTo;
+
+
                     bool encrypt = context.Request.QueryString["encrypt"] == "1"; //1 encrypt anything else - don't encrypt
 
                     switch (query)
-                {
+                    {
                         case "status":
 
                             Respond(context, sage.connectionStatus.ToString(), encrypt);
@@ -111,8 +122,6 @@ namespace WebListener
 
                         case "customers":
 
-                            int page = 0;
-                            string page_str = context.Request.QueryString["page"];
                             if (page_str != null)
                             {
                                 try
@@ -122,11 +131,100 @@ namespace WebListener
                                 catch (Exception)
                                 {
                                     Respond(context, "{\"error\":\"Page number is not a number\"}");
+                                    break;
                                 }
                             }
 
                             Respond(context, sage.getCustomers(serverName, databaseName, page), encrypt);
                             
+                            break;
+
+                        case "invoices":
+
+                            if (customerId == null)
+                            {
+                                Respond(context, "{\"error\":\"Customer ID not set\"}");
+                                break;
+                            }
+
+                            if (datefrom_str == null)
+                            {
+                                Respond(context, "{\"error\":\"Date From not set\"}");
+                                break;
+                            }
+
+                            if (dateto_str == null)
+                            {
+                                Respond(context, "{\"error\":\"Date To not set\"}");
+                                break;
+                            }
+                            
+                            try
+                            {
+                                dateFrom = DateTime.ParseExact(datefrom_str, "yyyyMMddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception)
+                            {
+                                Respond(context, "{\"error\":\"Date From is incorrect\"}");
+                                break;
+                            }
+
+                            try
+                            {
+                                dateTo = DateTime.ParseExact(dateto_str, "yyyyMMddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception)
+                            {
+                                Respond(context, "{\"error\":\"Date To is incorrect\"}");
+                                break;
+                            }
+
+                            Respond(context, sage.getCustomerInvoices(serverName, databaseName, customerId, dateFrom, dateTo), encrypt);
+
+                            break;
+
+                        case "receipts":
+
+                            if (customerId == null)
+                            {
+                                Respond(context, "{\"error\":\"Customer ID not set\"}");
+                                break;
+                            }
+
+                            if (datefrom_str == null)
+                            {
+                                Respond(context, "{\"error\":\"Date From not set\"}");
+                                break;
+                            }
+
+                            if (dateto_str == null)
+                            {
+                                Respond(context, "{\"error\":\"Date To not set\"}");
+                                break;
+                            }
+
+                            try
+                            {
+                                dateFrom = DateTime.ParseExact(datefrom_str, "yyyyMMddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception)
+                            {
+                                Respond(context, "{\"error\":\"Date From is incorrect\"}");
+                                break;
+                            }
+
+                            try
+                            {
+                                dateTo = DateTime.ParseExact(dateto_str, "yyyyMMddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception)
+                            {
+                                Respond(context, "{\"error\":\"Date To is incorrect\"}");
+                                break;
+                            }
+
+                            Respond(context, sage.getCustomerReceipts(serverName, databaseName, customerId, dateFrom, dateTo), encrypt);
+
                             break;
 
                         case "countcustomers":
@@ -139,14 +237,14 @@ namespace WebListener
                             Respond(context, "{\"error\":\"Unknown query\"}");
 
                             break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
                 }
             }
-            catch (Exception ex)
-            {
-                    Console.WriteLine(ex.ToString());
-            }
         }
-    }
 
         private static string EncryptString(string key, string plainText)
         {
@@ -188,26 +286,24 @@ namespace WebListener
             else
                 buffer = Encoding.ASCII.GetBytes(response);
 
+            context.Response.ContentType = "application/json";
+            context.Response.ContentLength64 = buffer.Length;
+            context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
 
-        context.Response.ContentType = "application/json";
-        context.Response.ContentLength64 = buffer.Length;
-        context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
 
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.OutputStream.Flush();
+        }
 
-        context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+        private void Initialize()
+        {
+            _serverThread = new Thread(this.Listen);
+            _serverThread.Start();
+        }
 
-        context.Response.StatusCode = (int)HttpStatusCode.OK;
-        context.Response.OutputStream.Flush();
-    }
-
-    private void Initialize()
-    {
-        _serverThread = new Thread(this.Listen);
-        _serverThread.Start();
-    }
-
-    public void startWebServer(Sage50.Sage50 sage_)
-    {
+        public void startWebServer(Sage50.Sage50 sage_)
+        {
             sage = sage_;
             
             //get an empty port
@@ -217,5 +313,5 @@ namespace WebListener
             l.Stop();
             this.Initialize();
         }
-}
+    }
 }

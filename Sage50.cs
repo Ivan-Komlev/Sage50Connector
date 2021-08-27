@@ -102,6 +102,7 @@ namespace Sage50
                     FilterExpression filter = FilterExpression.Equal(
                     FilterExpression.Property("Customer.IsInactive"),
                     FilterExpression.Constant(false));
+
                     LoadModifiers modifiers = LoadModifiers.Create();
                     modifiers.Filters = filter;
                     customers.Load(modifiers);
@@ -163,6 +164,158 @@ namespace Sage50
             }
 
             
+
+            return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
+        }
+
+        public string getCustomerInvoices(string serverName, string databaseName, string customerID, DateTime dateFrom, DateTime dateTo)
+        {
+            CompanyIdentifier companyIdentifier = session.LookupCompanyIdentifier(serverName, databaseName);
+
+            connectionStatus = session.RequestAccess(companyIdentifier);
+
+            if (connectionStatus == AuthorizationResult.Granted)
+            {
+                Company company = session.Open(companyIdentifier);
+
+                var customers = company.Factories.CustomerFactory.List();
+
+                FilterExpression filter2 = FilterExpression.Equal(
+                FilterExpression.Property("Customer.ID"),
+                FilterExpression.Constant(customerID));
+
+
+                LoadModifiers modifiers2 = LoadModifiers.Create();
+                modifiers2.Filters = filter2;
+                customers.Load(modifiers2);
+                var cs = customers.ToList();
+
+                if (cs.Count == 0)
+                {
+                    session.Close(company);
+                    return "{\"error\":\"Customer not found" + "\"}";
+                }
+
+                Customer customer = cs[0];
+
+                EntityReference customer_key = customer.Key;
+
+                var invoices = company.Factories.SalesInvoiceFactory.List();
+                FilterExpression filter = FilterExpression.Equal(
+                FilterExpression.Property("SalesInvoice.CustomerReference"),
+                FilterExpression.Constant(customer_key));
+
+                LoadModifiers modifiers = LoadModifiers.Create();
+                modifiers.Filters = filter;
+                invoices.Load(modifiers);
+
+
+
+                List<Sage.Peachtree.API.SalesInvoice> invoicesList = invoices.ToList();
+                List<InvoiceDetails> invoiceDetailsList = new List<InvoiceDetails>();
+
+                for (int index = 0; index < invoicesList.Count; index++)
+                {
+                    SalesInvoice invoice = invoicesList[index];
+
+                    InvoiceDetails invoiceDetails = new InvoiceDetails((decimal)invoice.Amount, (decimal)invoice.AmountDue)
+                    {
+                        DiscountAmount = (decimal)invoice.DiscountAmount,
+                        ReferenceNumber = invoice.ReferenceNumber
+                    };
+
+                    if (invoice.Date != null)
+                        invoiceDetails.Date = invoice.Date.ToString();
+
+                    if (invoice.DateDue != null)
+                        invoiceDetails.DateDue = invoice.DateDue.ToString();
+
+                    if (invoice.DiscountDate != null)
+                        invoiceDetails.DiscountDate = invoice.DiscountDate.ToString();
+
+
+                    invoiceDetailsList.Add(invoiceDetails);
+                }
+
+                session.Close(company);
+
+                var json = new JavaScriptSerializer().Serialize(invoiceDetailsList);
+                return json.ToString();
+
+            }  
+
+
+            return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
+        }
+
+
+        public string getCustomerReceipts(string serverName, string databaseName, string customerID, DateTime dateFrom, DateTime dateTo)
+        {
+            CompanyIdentifier companyIdentifier = session.LookupCompanyIdentifier(serverName, databaseName);
+
+            connectionStatus = session.RequestAccess(companyIdentifier);
+
+            if (connectionStatus == AuthorizationResult.Granted)
+            {
+                Company company = session.Open(companyIdentifier);
+
+                var customers = company.Factories.CustomerFactory.List();
+
+                FilterExpression filter3 = FilterExpression.Equal(
+                FilterExpression.Property("Customer.ID"),
+                FilterExpression.Constant(customerID));
+
+
+                LoadModifiers modifiers3 = LoadModifiers.Create();
+                modifiers3.Filters = filter3;
+                customers.Load(modifiers3);
+                var cs = customers.ToList();
+
+                if (cs.Count == 0)
+                {
+                    session.Close(company);
+                    return "{\"error\":\"Customer not found" + "\"}";
+                }
+
+                Customer customer = cs[0];
+
+                EntityReference customer_key = customer.Key;
+
+                var receipts = company.Factories.ReceiptFactory.List();
+
+                FilterExpression filter_receipt = FilterExpression.Equal(
+                FilterExpression.Property("Receipt.CustomerReference"),
+                FilterExpression.Constant(customer_key));
+
+                LoadModifiers modifiers = LoadModifiers.Create();
+                modifiers.Filters = filter_receipt;
+                receipts.Load(modifiers);
+
+                List<Sage.Peachtree.API.Receipt> receiptList = receipts.ToList();
+                List<ReceiptDetails> receiptDetailsList = new List<ReceiptDetails>();
+
+                for (int index = 0; index < receiptList.Count; index++)
+                {
+                    Receipt receipt = receiptList[index];
+
+                    ReceiptDetails ReceiptDetails = new ReceiptDetails((decimal)receipt.Amount)
+                    {
+                        PaymentMethod = receipt.PaymentMethod,
+                        ReferenceNumber = receipt.ReferenceNumber
+                    };
+
+                    if (receipt.Date != null)
+                        ReceiptDetails.Date = receipt.Date.ToString();
+
+                    receiptDetailsList.Add(ReceiptDetails);
+                }
+
+                session.Close(company);
+
+                var json = new JavaScriptSerializer().Serialize(receiptDetailsList);
+                return json.ToString();
+
+            }
 
             return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
         }

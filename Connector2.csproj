@@ -31,7 +31,9 @@
   <ItemGroup>
     <Compile Include="configuration.cs" />
     <Compile Include="CustomerDetails.cs" />
+    <Compile Include="InvoiceDetails.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ReceiptDetails.cs" />
     <Compile Include="Sage50.cs" />
     <Compile Include="weblistener.cs" />
   </ItemGroup>
