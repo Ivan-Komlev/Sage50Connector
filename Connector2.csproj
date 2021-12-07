@@ -29,6 +29,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="InvoiceLine.cs" />
     <Compile Include="configuration.cs" />
     <Compile Include="CustomerDetails.cs" />
     <Compile Include="InvoiceDetails.cs" />

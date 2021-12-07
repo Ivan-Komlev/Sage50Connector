@@ -221,7 +221,8 @@ namespace Sage50
                     InvoiceDetails invoiceDetails = new InvoiceDetails((decimal)invoice.Amount, (decimal)invoice.AmountDue)
                     {
                         DiscountAmount = (decimal)invoice.DiscountAmount,
-                        ReferenceNumber = invoice.ReferenceNumber
+                        ReferenceNumber = invoice.ReferenceNumber,
+                        Key = invoice.Key.Guid.ToString()
                     };
 
                     if (invoice.Date != null)
@@ -283,6 +284,9 @@ namespace Sage50
 
                 var receipts = company.Factories.ReceiptFactory.List();
 
+                //var cpf = company.Factories.ReceiptInvoiceLineFactory.List();
+
+                
                 FilterExpression filter_receipt = FilterExpression.Equal(
                 FilterExpression.Property("Receipt.CustomerReference"),
                 FilterExpression.Constant(customer_key));
@@ -290,6 +294,14 @@ namespace Sage50
                 LoadModifiers modifiers = LoadModifiers.Create();
                 modifiers.Filters = filter_receipt;
                 receipts.Load(modifiers);
+
+                //LoadModifiers modifiers2 = LoadModifiers.Create();
+                //modifiers.Filters = filter_receipt;
+
+                
+                //cpf.Load();
+
+                //List<Sage.Peachtree.API.ReceiptInvoiceLine> cpfList = cpf.ToList();
 
                 List<Sage.Peachtree.API.Receipt> receiptList = receipts.ToList();
                 List<ReceiptDetails> receiptDetailsList = new List<ReceiptDetails>();
@@ -306,6 +318,19 @@ namespace Sage50
 
                     if (receipt.Date != null)
                         ReceiptDetails.Date = receipt.Date.ToString();
+
+                    for (int x = 0; x < receipt.ApplyToInvoiceLines.Count; x++)
+                    {
+
+                        InvoiceLine Invoice = new InvoiceLine(receipt.ApplyToInvoiceLines[x].Amount, receipt.ApplyToInvoiceLines[x].AmountPaid)
+                        {
+                            Description = receipt.ApplyToInvoiceLines[x].Description,
+                            DiscountAmount = receipt.ApplyToInvoiceLines[x].DiscountAmount,
+                            InvoiceKey = receipt.ApplyToInvoiceLines[x].InvoiceReference.Guid.ToString()
+                        };
+
+                        ReceiptDetails.ApplyToInvoices.Add(Invoice);
+                    }
 
                     receiptDetailsList.Add(ReceiptDetails);
                 }

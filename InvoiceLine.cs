@@ -16,23 +16,20 @@ using System.Threading.Tasks;
 using Sage.Peachtree.API;
 using Sage.Peachtree.API.Collections.Generic;
 
-public struct ReceiptDetails
+public struct InvoiceLine
 {
     public decimal Amount;
-    
-    public string Date;
-    public string PaymentMethod;
-    public string ReferenceNumber;
+    public decimal AmountPaid;
+    public string Description;
+    public decimal DiscountAmount;
+    public string InvoiceKey;
 
-    public List<InvoiceLine> ApplyToInvoices;
-
-    public ReceiptDetails(decimal Amount_)
+    public InvoiceLine(decimal Amount_, decimal AmountPaid_)
     {
         Amount = Amount_;
-        Date = "";
-        PaymentMethod = "";
-        ReferenceNumber = "";
-
-        ApplyToInvoices = new List<InvoiceLine>();
+        AmountPaid = AmountPaid_;
+        Description = "";
+        DiscountAmount = 0;
+        InvoiceKey = "";
     }
 }

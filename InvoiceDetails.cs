@@ -25,6 +25,7 @@ public struct InvoiceDetails
     public decimal DiscountAmount;
     public string DiscountDate;
     public string ReferenceNumber;
+    public string Key;
 
     public InvoiceDetails(decimal Amount_, decimal AmountDue_)
     {
@@ -35,5 +36,6 @@ public struct InvoiceDetails
         DiscountAmount = 0;
         DiscountDate = "";
         ReferenceNumber = "";
+        Key = "";
     }
 }
