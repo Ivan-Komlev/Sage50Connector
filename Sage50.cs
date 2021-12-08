@@ -313,7 +313,8 @@ namespace Sage50
                     ReceiptDetails ReceiptDetails = new ReceiptDetails((decimal)receipt.Amount)
                     {
                         PaymentMethod = receipt.PaymentMethod,
-                        ReferenceNumber = receipt.ReferenceNumber
+                        ReferenceNumber = receipt.ReferenceNumber,
+                        Key = receipt.Key.Guid.ToString()
                     };
 
                     if (receipt.Date != null)

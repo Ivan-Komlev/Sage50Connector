@@ -23,6 +23,7 @@ public struct ReceiptDetails
     public string Date;
     public string PaymentMethod;
     public string ReferenceNumber;
+    public string Key;
 
     public List<InvoiceLine> ApplyToInvoices;
 
@@ -32,6 +33,7 @@ public struct ReceiptDetails
         Date = "";
         PaymentMethod = "";
         ReferenceNumber = "";
+        Key = "";
 
         ApplyToInvoices = new List<InvoiceLine>();
     }
