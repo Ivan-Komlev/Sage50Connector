@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Web.Script.Serialization;
 using System.Collections.Generic;
+//using API_COLLECTIONS = Sage.Peachtree.API.Collections.Generic;
 
 namespace Sage50
 {
@@ -180,14 +181,14 @@ namespace Sage50
 
                 var customers = company.Factories.CustomerFactory.List();
 
-                FilterExpression filter2 = FilterExpression.Equal(
-                FilterExpression.Property("Customer.ID"),
-                FilterExpression.Constant(customerID));
+                FilterExpression filterCustomer = FilterExpression.Equal(
+                    FilterExpression.Property("Customer.ID"),FilterExpression.Constant(customerID));
 
+                LoadModifiers modifiersCustomer = LoadModifiers.Create();
 
-                LoadModifiers modifiers2 = LoadModifiers.Create();
-                modifiers2.Filters = filter2;
-                customers.Load(modifiers2);
+                modifiersCustomer.Filters = filterCustomer;
+
+                customers.Load(modifiersCustomer);
                 var cs = customers.ToList();
 
                 if (cs.Count == 0)
@@ -201,15 +202,22 @@ namespace Sage50
                 EntityReference customer_key = customer.Key;
 
                 var invoices = company.Factories.SalesInvoiceFactory.List();
-                FilterExpression filter = FilterExpression.Equal(
+                FilterExpression filterCustomerReference = FilterExpression.Equal(
                 FilterExpression.Property("SalesInvoice.CustomerReference"),
                 FilterExpression.Constant(customer_key));
 
+                FilterExpression filterDateFrom =
+                    FilterExpression.GreaterThanOrEqual(FilterExpression.Property("SalesInvoice.Date"), FilterExpression.Constant(dateFrom));
+
+                FilterExpression filterDateTo =
+                    FilterExpression.LessThanOrEqual(FilterExpression.Property("SalesInvoice.Date"),FilterExpression.Constant(dateTo));
+
+                FilterExpression filterDate = FilterExpression.AndAlso(filterDateFrom, filterDateTo);
+
                 LoadModifiers modifiers = LoadModifiers.Create();
-                modifiers.Filters = filter;
+                modifiers.Filters = FilterExpression.AndAlso(filterCustomerReference, filterDate);
+
                 invoices.Load(modifiers);
-
-
 
                 List<Sage.Peachtree.API.SalesInvoice> invoicesList = invoices.ToList();
                 List<InvoiceDetails> invoiceDetailsList = new List<InvoiceDetails>();
@@ -244,11 +252,8 @@ namespace Sage50
                 return json.ToString();
 
             }  
-
-
             return "{\"error\":\"Access: " + connectionStatus.ToString() + "\"}";
         }
-
 
         public string getCustomerReceipts(string serverName, string databaseName, string customerID, DateTime dateFrom, DateTime dateTo)
         {
@@ -284,24 +289,22 @@ namespace Sage50
 
                 var receipts = company.Factories.ReceiptFactory.List();
 
-                //var cpf = company.Factories.ReceiptInvoiceLineFactory.List();
-
-                
-                FilterExpression filter_receipt = FilterExpression.Equal(
+                FilterExpression filterCustomerReference = FilterExpression.Equal(
                 FilterExpression.Property("Receipt.CustomerReference"),
                 FilterExpression.Constant(customer_key));
 
+                FilterExpression filterDateFrom =
+                    FilterExpression.GreaterThanOrEqual(FilterExpression.Property("Receipt.Date"), FilterExpression.Constant(dateFrom));
+
+                FilterExpression filterDateTo =
+                    FilterExpression.LessThanOrEqual(FilterExpression.Property("Receipt.Date"), FilterExpression.Constant(dateTo));
+
+                FilterExpression filterDate = FilterExpression.AndAlso(filterDateFrom, filterDateTo);
+
                 LoadModifiers modifiers = LoadModifiers.Create();
-                modifiers.Filters = filter_receipt;
+                modifiers.Filters = FilterExpression.AndAlso(filterCustomerReference, filterDate);
+
                 receipts.Load(modifiers);
-
-                //LoadModifiers modifiers2 = LoadModifiers.Create();
-                //modifiers.Filters = filter_receipt;
-
-                
-                //cpf.Load();
-
-                //List<Sage.Peachtree.API.ReceiptInvoiceLine> cpfList = cpf.ToList();
 
                 List<Sage.Peachtree.API.Receipt> receiptList = receipts.ToList();
                 List<ReceiptDetails> receiptDetailsList = new List<ReceiptDetails>();
